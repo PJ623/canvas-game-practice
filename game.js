@@ -1,17 +1,39 @@
 class Game {
     constructor(fps) {
         this.animation;
-        this.player = new Player(10, 10, "yellow");
+        this.player = new Player(this, 100, 150, "yellow");
         this.canvas;
         this.context;
         this.inputsList = {};
-        if(!fps){
-            fps = 1000/60;
+        if (!fps) {
+            fps = 1000 / 60;
         } else {
-            fps = 1000/fps;
+            fps = 1000 / fps;
         }
 
         this.fps = fps;
+    }
+
+    adjustForFloor(y, height) {
+        let floor;
+
+        if (!height)
+            floor = this.canvas.height - y;
+        else
+            floor = this.canvas.height - y - height;
+
+        return floor;
+    }
+
+    // Take in newPositionX, and newPositionY
+    detectBoundaryCollision(x, y, entity){
+        if(x < 0 || x > (this.canvas.width - entity.width) || y < 0 || y > (this.canvas.height - entity.height)){
+            // relocate to move?
+            //entity.positionX =this.canvas.width-entity.width;
+            return false;
+        } else {
+            return true;
+        }
     }
 
     bind(canvas) {
@@ -44,8 +66,6 @@ class Game {
     }
 
     turn() {
-        //this.player.attack();
-
         for (let input in this.inputsList) {
             switch (input) {
                 case "32":

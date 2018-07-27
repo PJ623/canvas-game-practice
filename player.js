@@ -1,11 +1,18 @@
 
 class Player {
-    constructor(width, height, appearance) {
+    constructor(game, width, height, appearance) {
+        this.game = game;
         this.width = width;
         this.height = height;
         this.appearance = appearance;
         this.state = "neutral";
         this.action = null;
+        this.positionX;
+        this.positionY;
+    }
+
+    spawn(x, y) {
+        
     }
 
     checkState() {
@@ -52,11 +59,11 @@ class Player {
         }
     }
 
-    render(){
+    render() {
 
     }
 
-    get area(){
+    get area() {
 
     }
 }
