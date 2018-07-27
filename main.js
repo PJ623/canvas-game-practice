@@ -1,3 +1,3 @@
-let game = new Game(1);
+let game = new Game();
 game.bind("game");
 game.start();
