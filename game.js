@@ -42,43 +42,51 @@ class Game {
         this.context = this.canvas.getContext("2d");
 
         this.canvas.addEventListener("keydown", (e) => {
-            if (e.keyCode == "32") {
+            if (e.keyCode == "32" || e.keyCode == "65" || e.keyCode == "68") {
                 this.inputsList[e.keyCode] = true;
             }
         });
 
         this.canvas.addEventListener("keyup", (e) => {
-            if (e.keyCode == "32") {
+            if (e.keyCode == "32" || e.keyCode == "65" || e.keyCode == "68") {
                 this.inputsList[e.keyCode] = false;
             }
         });
 
-        // doesn't seem to work in FireFox?
         this.canvas.focus();
     }
 
     start() {
         console.log("Starting game.");
-
-        this.player.spawn(100, 20);
-
+        this.player.spawn(0, 0);
         this.animation = setInterval(this.turn.bind(this), this.fps);
     }
 
     turn() {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         for (let input in this.inputsList) {
             switch (input) {
                 case "32":
                     if (this.inputsList[input])
                         this.player.attack();
                     break;
+                case "65":
+                    if (this.inputsList[input]) {
+                        this.player.move(-5, 0);
+                    }
+                    break;
+                case "68":
+                    if (this.inputsList[input]) {
+                        this.player.move(5, 0);
+                    }
+                    break;
             }
         }
 
-        this.player.processAction();
-
         // render all entities instead
+        // ordered so processAction hitboxes are rendered on top of player render
         this.player.render();
+        this.player.processAction();
     }
 
     stop() {
