@@ -47,12 +47,4 @@ class Effect {
     }*/
 }
 
-// move to Entity?
-class Hitbox extends Entity {
-    constructor(game, width, height, appearance, damage) {
-        super(game, width, height, appearance);
-        this.damage = damage;
-    }
-}
-
 // just use player.height and player.width as hurtbox

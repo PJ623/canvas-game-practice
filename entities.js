@@ -52,3 +52,16 @@ class Entity {
         return { left: left, right: right, top: top, bottom: bottom };
     }
 }
+
+class Hitbox extends Entity {
+    constructor(player, width, height, appearance, damage) {
+        super(player.game, width, height, appearance);
+        this.damage = damage;
+    }
+}
+
+class Hurtbox extends Entity {
+    constructor(player, width, height){
+        super(player.game, width, height, player.appearance);
+    }
+}
