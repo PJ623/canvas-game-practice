@@ -24,7 +24,7 @@ class Player extends Entity {
         });
 
         let active = new Effect(/*this,*/ 3, () => {
-            let hitbox = new Hitbox(this.game, 100, 50, "red", 1);
+            let hitbox = new Hitbox(this, 100, 50, "red", 1);
 
             console.log("active frames");
 
