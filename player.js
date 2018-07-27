@@ -12,10 +12,38 @@ class Player {
     }
 
     spawn(x, y) {
-        
+        this.positionX = x;
+        this.positionY = y;
+
+        this.move(0, 0);
     }
 
-    checkState() {
+    move(x, y) {
+        let newPositionX = this.positionX + x;
+        let newPositionY = this.positionY + y;
+
+        // Turn into new function repositionInBounds?
+        if (this.game.detectBoundaryCollision(newPositionX, newPositionY, this)) {
+
+            // Move to move()?
+            if (newPositionX < 0) {
+                newPositionX = 0;
+            } else if (newPositionX > (this.game.canvas.width - this.width)) {
+                newPositionX = this.game.canvas.width - this.width;
+            }
+
+            if (newPositionY < 0) {
+                newPositionY = 0;
+            } else if (newPositionY > (this.game.canvas.height - this.height)) {
+                newPositionY = this.game.canvas.height - this.height;
+            }
+        }
+
+        this.positionX = newPositionX;
+        this.positionY = newPositionY;
+    }
+
+    processAction() {
         //console.log("this.action:",this.action);
         //console.log("state:", this.state);
         if (this.action) {
@@ -60,10 +88,17 @@ class Player {
     }
 
     render() {
-
+        this.game.context.beginPath();
+        this.game.context.fillStyle = this.appearance;
+        this.game.context.fillRect(this.positionX, this.game.adjustForFloor(this.positionY, this.height), this.width, this.height);
     }
 
-    get area() {
+    get positionOfPoints() {
+        let left = this.positionX;
+        let right = this.positionX + this.width;
+        let top = this.positionY + this.height;
+        let bottom = this.positionY;
 
+        return { left: left, right: right, top: top, bottom: bottom };
     }
 }

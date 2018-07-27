@@ -5,11 +5,11 @@ class Game {
         this.canvas;
         this.context;
         this.inputsList = {};
-        if (!fps) {
+
+        if (!fps)
             fps = 1000 / 60;
-        } else {
+        else
             fps = 1000 / fps;
-        }
 
         this.fps = fps;
     }
@@ -26,14 +26,11 @@ class Game {
     }
 
     // Take in newPositionX, and newPositionY
-    detectBoundaryCollision(x, y, entity){
-        if(x < 0 || x > (this.canvas.width - entity.width) || y < 0 || y > (this.canvas.height - entity.height)){
-            // relocate to move?
-            //entity.positionX =this.canvas.width-entity.width;
-            return false;
-        } else {
+    detectBoundaryCollision(x, y, entity) {
+        if (x < 0 || x > (this.canvas.width - entity.width) || y < 0 || y > (this.canvas.height - entity.height))
             return true;
-        }
+        else
+            return false;
     }
 
     bind(canvas) {
@@ -62,6 +59,9 @@ class Game {
 
     start() {
         console.log("Starting game.");
+
+        this.player.spawn(100, 20);
+
         this.animation = setInterval(this.turn.bind(this), this.fps);
     }
 
@@ -69,14 +69,16 @@ class Game {
         for (let input in this.inputsList) {
             switch (input) {
                 case "32":
-                    if (this.inputsList[input]) {
+                    if (this.inputsList[input])
                         this.player.attack();
-                    }
                     break;
             }
         }
 
-        this.player.checkState();
+        this.player.processAction();
+
+        // render all entities instead
+        this.player.render();
     }
 
     stop() {
