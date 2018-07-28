@@ -10,7 +10,10 @@ class Player extends Entity {
         this.state = "neutral";
         this.action = null;
         this.movementSpeed = 8;
-        
+
+        this.hitboxes = [];
+        this.hurtboxes = [];
+
         // TODO: Track active hitboxes and hurtboxes
         //this.hitboxes;
         //this.hurtboxes;
@@ -21,7 +24,37 @@ class Player extends Entity {
         // crouch move that has shorter range, but good recovery
     }
 
-    processAction() {
+    processInputs() {
+        this.hitboxes = [];
+        this.hurtboxes = [];
+
+        let speedX = 0;
+        let speedY = 0;
+
+        // space
+        if (this.game.inputsList["32"]) {
+            this.attack();
+        }
+
+        // a
+        if (this.game.inputsList["65"]) {
+            speedX += -this.movementSpeed;
+        }
+
+        // d
+        if (this.game.inputsList["68"]) {
+            speedX += this.movementSpeed;
+        }
+
+        //s. placed later to override speeds from a or d
+        if (this.game.inputsList["83"]) {
+            speedX = 0;
+            speedY = 0;
+            //this.player.crouch();
+        }
+
+        this.move(speedX, speedY);
+
         if (this.action) {
             if (this.action.isDone) {
                 this.state = "neutral";
@@ -44,11 +77,13 @@ class Player extends Entity {
 
             // track which hitboxes are active using Player.hitbox array? OR do collision detection right here with these instances of hitbox and hurtbox
             let hitbox = new Hitbox(this, 100, 50, this.positionX + (this.width / 2), this.positionY + (this.height / 2) - (50 / 2), 1);
-            hitbox.render();
+            //hitbox.render();
+            this.hitboxes.push(hitbox);
 
             let diff = 10;
             let hurtbox = new Hurtbox(this, hitbox.width - diff, hitbox.height - diff, hitbox.positionX, hitbox.positionY + diff / 2);
-            hurtbox.render();
+            //hurtbox.render();
+            this.hurtboxes.push(hurtbox);
         });
 
         let recovery = new Effect(/*this,*/ 8, () => {
@@ -65,7 +100,7 @@ class Player extends Entity {
         }
     }
 
-    // Overrides Entity.move()
+    // @Override Entity.move()
     move(x, y) {
         if (this.state == "neutral") {
             let newPositionX = this.positionX + x;
@@ -88,5 +123,29 @@ class Player extends Entity {
             this.positionX = newPositionX;
             this.positionY = newPositionY;
         }
+    }
+
+    // @Override Entity.render
+    render() {
+        this.game.context.beginPath();
+        this.game.context.fillStyle = this.appearance;
+        this.game.context.fillRect(this.positionX, this.game.adjustForFloor(this.positionY, this.height), this.width, this.height);
+
+        //this.game.context.beginPath();
+
+        if (this.hitboxes.length > 0) {
+            for (let i = 0; i < this.hitboxes.length; i++) {
+                this.game.context.beginPath();
+                this.hitboxes[i].render();
+            }
+        }
+
+        if (this.hurtboxes.length > 0) {
+            for (let i = 0; i < this.hitboxes.length; i++) {
+                this.game.context.beginPath();
+                this.hurtboxes[i].render();
+            }
+        }
+        //this.game.context.beginPath();
     }
 }
