@@ -9,7 +9,13 @@ class Player extends Entity {
         super(game, width, height, appearance);
         this.state = "neutral";
         this.action = null;
+        this.movementSpeed = 8;
+        
+        // TODO: Track active hitboxes and hurtboxes
+        //this.hitboxes;
+        //this.hurtboxes;
 
+        // this.hurtboxes?
         // make moveset
         // stand move that has long range but poor recovery
         // crouch move that has shorter range, but good recovery
@@ -34,20 +40,15 @@ class Player extends Entity {
         });
 
         let active = new Effect(/*this,*/ 3, () => {
-            let hitbox = new Hitbox(this, 100, 50, "red", 1);
-
             console.log("active frames");
 
-            // form hitbox
-            hitbox.positionX = this.positionX + (this.width / 2);
-            hitbox.positionY = this.positionY + (this.height / 2) + (hitbox.height / 2);
+            // track which hitboxes are active using Player.hitbox array? OR do collision detection right here with these instances of hitbox and hurtbox
+            let hitbox = new Hitbox(this, 100, 50, this.positionX + (this.width / 2), this.positionY + (this.height / 2) - (50 / 2), 1);
+            hitbox.render();
 
-            // render hitbox
-            this.game.context.beginPath();
-            this.game.context.fillStyle = "red";
-            this.game.context.fillRect(hitbox.positionX, this.game.adjustForFloor(hitbox.positionY), hitbox.width, hitbox.height);
-
-            // hitting logic
+            let diff = 10;
+            let hurtbox = new Hurtbox(this, hitbox.width - diff, hitbox.height - diff, hitbox.positionX, hitbox.positionY + diff / 2);
+            hurtbox.render();
         });
 
         let recovery = new Effect(/*this,*/ 8, () => {

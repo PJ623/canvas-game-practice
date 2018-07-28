@@ -1,3 +1,5 @@
+/* Tentative Title: Pokey */
+
 class Game {
     constructor(fps) {
         this.animation;
@@ -25,7 +27,6 @@ class Game {
         return floor;
     }
 
-    // Take in newPositionX, and newPositionY
     detectBoundaryCollision(x, y, entity) {
         if (x < 0 || x > (this.canvas.width - entity.width) || y < 0 || y > (this.canvas.height - entity.height))
             return true;
@@ -72,12 +73,12 @@ class Game {
                     break;
                 case "65":
                     if (this.inputsList[input]) {
-                        this.player.move(-5, 0);
+                        this.player.move(-this.player.movementSpeed, 0);
                     }
                     break;
                 case "68":
                     if (this.inputsList[input]) {
-                        this.player.move(5, 0);
+                        this.player.move(this.player.movementSpeed, 0);
                     }
                     break;
             }
