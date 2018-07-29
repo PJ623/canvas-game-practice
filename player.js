@@ -1,9 +1,3 @@
-/* 
-    TODO:
-    * Hit detection
-    * hurtboxes
-*/
-
 class Player extends Entity {
     constructor(game, width, height, appearance) {
         super(game, width, height, appearance);
@@ -15,9 +9,7 @@ class Player extends Entity {
         this.hurtboxes = [];
 
         // TODO:
-        // Track active hitboxes and hurtboxes
-        // this.hitboxes;
-        // this.hurtboxes;
+        // Side switching
 
         // make moveset
         // stand move that has long range but poor recovery
@@ -88,7 +80,11 @@ class Player extends Entity {
             /*if(hitLanded){
 
             }*/
-            this.game.detectBoxCollision(this.hitboxes[0], this.game.entitiesArray[1]);
+            for (let i = 0; i < this.game.entitiesArray.length; i++) {
+                if (this.game.entitiesArray[i].id != this.id) {
+                    this.game.detectBoxCollision(this.hitboxes[0], this.game.entitiesArray[i]);
+                }
+            }
         });
 
         let recovery = new Effect(/*this,*/ 8, () => {
@@ -125,7 +121,28 @@ class Player extends Entity {
                     newPositionY = this.game.canvas.height - this.height;
             }
 
-            // TODO: Detect collision with other entities
+            for (let i = 0; i < this.game.entitiesArray.length; i++) {
+                if (this.game.entitiesArray[i].id != this.id && this.game.detectBoxCollision(this, this.game.entitiesArray[i])) {
+                    let thisPoints = this.positionOfPoints;
+                    let entityPoints = this.game.entitiesArray[i].positionOfPoints;
+
+                    let differenceToLeft = entityPoints.left - (thisPoints.right + x);
+                    let differenceToRight = entityPoints.right - (thisPoints.left + x);
+
+                    if (differenceToLeft < 0)
+                        differenceToLeft = differenceToLeft * (-1);
+
+                    if (differenceToRight < 0)
+                        differenceToRight = differenceToRight * (-1);
+
+                    if (differenceToLeft < differenceToRight)
+                        newPositionX = entityPoints.left - this.width - 1;
+                    else
+                        newPositionX = entityPoints.right + 1;
+
+                    break; // push mover into non-occupied position
+                }
+            }
 
             this.positionX = newPositionX;
             this.positionY = newPositionY;

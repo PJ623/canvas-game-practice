@@ -6,16 +6,19 @@ class Entity {
         this.appearance = appearance;
         this.positionX;
         this.positionY;
+        this.id;
     }
 
     spawn(x, y) {
         this.positionX = x;
         this.positionY = y;
         this.game.entitiesArray.push(this);
+        this.id = this.game.entitiesArray.length - 1;
 
         this.move(0, 0);
     }
 
+    // maybe don't need anymore?
     move(x, y) {
         let newPositionX = this.positionX + x;
         let newPositionY = this.positionY + y;
@@ -32,6 +35,13 @@ class Entity {
                 newPositionY = 0;
             else if (newPositionY > (this.game.canvas.height - this.height))
                 newPositionY = this.game.canvas.height - this.height;
+        }
+
+        for(let i = 0; i < this.game.entitiesArray.length; i++){
+            console.log(this.id);
+            if(this.game.detectBoxCollision(this, this.game.entitiesArray[i]) && this.game.entitiesArray[i].id != this.id){
+                console.log("HD");
+            }
         }
 
         this.positionX = newPositionX;

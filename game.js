@@ -35,15 +35,15 @@ class Game {
             return false;
     }
 
-    detectBoxCollision(hitbox, hurtbox) {
-        hitbox = hitbox.positionOfPoints;
-        hurtbox = hurtbox.positionOfPoints;
+    detectBoxCollision(box1, box2) {
+        box1 = box1.positionOfPoints;
+        box2 = box2.positionOfPoints;
 
         // WORKS, but I want to make this more efficient
-        for (let i = hitbox.left; i < hitbox.right; i++) {
-            if (i >= hurtbox.left && i <= hurtbox.right) {
-                for (let j = hitbox.bottom; j < hitbox.top; j++) {
-                    if (j >= hurtbox.bottom && j <= hurtbox.top) {
+        for (let i = box1.left; i < box1.right; i++) {
+            if (i >= box2.left && i <= box2.right) {
+                for (let j = box1.bottom; j < box1.top; j++) {
+                    if (j >= box2.bottom && j <= box2.top) {
                         console.log("COLLISION DETECTED AT x:", i, "y:", j);
                         return true;
                     }
@@ -51,8 +51,8 @@ class Game {
             }
         }
 
-        // attacker.hitboxes[i]
-        // defender.hurtboxes[i]
+        // attacker.box1es[i]
+        // defender.box2es[i]
     }
 
     bind(canvas) {
@@ -83,7 +83,7 @@ class Game {
         this.player.spawn(0, 0);
         this.animation = setInterval(this.turn.bind(this), this.fps);
         let enemy = new Enemy(this, 100, 150);
-        enemy.spawn(this.canvas.width - enemy.width - 100, 0);
+        enemy.spawn(this.canvas.width - enemy.width - 200, 0);
     }
 
     turn() {
