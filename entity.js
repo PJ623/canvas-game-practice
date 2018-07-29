@@ -11,6 +11,7 @@ class Entity {
     spawn(x, y) {
         this.positionX = x;
         this.positionY = y;
+        this.game.entitiesArray.push(this);
 
         this.move(0, 0);
     }

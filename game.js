@@ -1,4 +1,4 @@
-/* Tentative Title: Pokey */
+/* Tentative Title: Pokey or TAG game with lots of movement*/
 
 class Game {
     constructor(fps) {
@@ -7,6 +7,7 @@ class Game {
         this.canvas;
         this.context;
         this.inputsList = {};
+        this.entitiesArray = [];
 
         if (!fps)
             fps = 1000 / 60;
@@ -32,6 +33,26 @@ class Game {
             return true;
         else
             return false;
+    }
+
+    detectBoxCollision(hitbox, hurtbox) {
+        hitbox = hitbox.positionOfPoints;
+        hurtbox = hurtbox.positionOfPoints;
+
+        // WORKS, but I want to make this more efficient
+        for (let i = hitbox.left; i < hitbox.right; i++) {
+            if (i >= hurtbox.left && i <= hurtbox.right) {
+                for (let j = hitbox.bottom; j < hitbox.top; j++) {
+                    if (j >= hurtbox.bottom && j <= hurtbox.top) {
+                        console.log("COLLISION DETECTED AT x:", i, "y:", j);
+                        return true;
+                    }
+                }
+            }
+        }
+
+        // attacker.hitboxes[i]
+        // defender.hurtboxes[i]
     }
 
     bind(canvas) {
@@ -61,14 +82,17 @@ class Game {
         console.log("Starting game.");
         this.player.spawn(0, 0);
         this.animation = setInterval(this.turn.bind(this), this.fps);
+        let enemy = new Enemy(this, 100, 150);
+        enemy.spawn(this.canvas.width - enemy.width - 100, 0);
     }
 
     turn() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.player.processInputs();
-        this.player.render();
-        // render enemies
-        // detectCollision();
+
+        for (let i = 0; i < this.entitiesArray.length; i++) {
+            this.entitiesArray[i].render();
+        }
     }
 
     stop() {

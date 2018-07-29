@@ -46,5 +46,3 @@ class Effect {
         console.log(this);
     }*/
 }
-
-// just use player.height and player.width as hurtbox

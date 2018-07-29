@@ -14,20 +14,44 @@
             justify-content: center;
         }
 
+        .column {
+            flex-direction: column;
+        }
+
+        .left{
+            flex-direction: row;
+        }
+
         #game {
             border: 1px solid black;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
         }
     </style>
 </head>
 
 <body>
-    <div class="flex center">
+    <div class="flex center column">
         <canvas id="game" height=480 width=640 tabindex="1"></canvas>
+        <div class="flex column">
+            <h1>Controls</h1>
+            <ul>
+                <li>'a': move left</li>
+                <li>'d': move right</li>
+                <li>'s': crouch</li>
+                <li>spacebar: attack</li>
+            </ul>
+        </div>
     </div>
     <script src="entity.js"></script>
     <script src="boxes.js"></script>
     <script src="actions.js"></script>
     <script src="player.js"></script>
+    <script src="enemy.js"></script>
     <script src="game.js"></script>
     <script src="main.js"></script>
 </body>

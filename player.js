@@ -14,11 +14,11 @@ class Player extends Entity {
         this.hitboxes = [];
         this.hurtboxes = [];
 
-        // TODO: Track active hitboxes and hurtboxes
-        //this.hitboxes;
-        //this.hurtboxes;
+        // TODO:
+        // Track active hitboxes and hurtboxes
+        // this.hitboxes;
+        // this.hurtboxes;
 
-        // this.hurtboxes?
         // make moveset
         // stand move that has long range but poor recovery
         // crouch move that has shorter range, but good recovery
@@ -65,8 +65,9 @@ class Player extends Entity {
         }
     }
 
-    // Make hitboxes
     attack() {
+        //let hitLanded;
+
         let startup = new Effect(/*this,*/ 5, () => {
             console.log("startup frames");
             // alter hurtbox?
@@ -77,13 +78,17 @@ class Player extends Entity {
 
             // track which hitboxes are active using Player.hitbox array? OR do collision detection right here with these instances of hitbox and hurtbox
             let hitbox = new Hitbox(this, 100, 50, this.positionX + (this.width / 2), this.positionY + (this.height / 2) - (50 / 2), 1);
-            //hitbox.render();
             this.hitboxes.push(hitbox);
 
             let diff = 10;
             let hurtbox = new Hurtbox(this, hitbox.width - diff, hitbox.height - diff, hitbox.positionX, hitbox.positionY + diff / 2);
-            //hurtbox.render();
             this.hurtboxes.push(hurtbox);
+
+            // temp
+            /*if(hitLanded){
+
+            }*/
+            this.game.detectBoxCollision(this.hitboxes[0], this.game.entitiesArray[1]);
         });
 
         let recovery = new Effect(/*this,*/ 8, () => {
@@ -120,6 +125,8 @@ class Player extends Entity {
                     newPositionY = this.game.canvas.height - this.height;
             }
 
+            // TODO: Detect collision with other entities
+
             this.positionX = newPositionX;
             this.positionY = newPositionY;
         }
@@ -130,8 +137,6 @@ class Player extends Entity {
         this.game.context.beginPath();
         this.game.context.fillStyle = this.appearance;
         this.game.context.fillRect(this.positionX, this.game.adjustForFloor(this.positionY, this.height), this.width, this.height);
-
-        //this.game.context.beginPath();
 
         if (this.hitboxes.length > 0) {
             for (let i = 0; i < this.hitboxes.length; i++) {
@@ -146,6 +151,5 @@ class Player extends Entity {
                 this.hurtboxes[i].render();
             }
         }
-        //this.game.context.beginPath();
     }
 }
