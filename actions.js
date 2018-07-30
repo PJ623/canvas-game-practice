@@ -6,22 +6,26 @@ class Action {
         this.recovery = recovery;
         this.animationDuration = this.startup.duration + this.active.duration + this.recovery.duration;
         this.currentFrame = 0;
+        this.currentFrameForSegment = 0;
         this.isDone = false;
     }
 
     // get callbacks! hmm make objects for startup, active, and recovery?
     execute() {
         if (this.currentFrame < this.startup.duration) {
+            this.currentFrameForSegment = this.currentFrame;
             if (typeof this.startup.effect == "function") {
-                this.startup.effect(this.currentFrame);
+                this.startup.effect(this.currentFrameForSegment);
             }
         } else if ((this.currentFrame - this.startup.duration) < this.active.duration) {
+            this.currentFrameForSegment = this.currentFrame - this.startup.duration;
             if (typeof this.active.effect == "function") {
-                this.active.effect(this.currentFrame);
+                this.active.effect(this.currentFrameForSegment);
             }
         } else if ((this.currentFrame - this.startup.duration - this.active.duration) < this.recovery.duration) {
+            this.currentFrameForSegment = this.currentFrame - this.startup.duration - this.active.duration;
             if (typeof this.recovery.effect == "function") {
-                this.recovery.effect(this.currentFrame);
+                this.recovery.effect(this.currentFrameForSegment);
             }
         }
         if (this.currentFrame == this.animationDuration) {

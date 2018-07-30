@@ -4,5 +4,10 @@ class Enemy extends Entity {
         this.hitboxes;
         this.hurtboxes;
     }
+
+    // emulate random behavior
+    // extend from Player
+    // change controls, change positions of attacks for right hand side
+
     // already has Entity.move, Entity.render, Entity.positionOfPoints, Entity.spawn
 }

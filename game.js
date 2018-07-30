@@ -3,7 +3,7 @@
 class Game {
     constructor(fps) {
         this.animation;
-        this.player = new Player(this, 100, 150, "yellow");
+        this.player = new Player(this, 100, 150, "pink");
         this.canvas;
         this.context;
         this.inputsList = {};

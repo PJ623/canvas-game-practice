@@ -3,7 +3,7 @@ class Player extends Entity {
         super(game, width, height, appearance);
         this.state = "standing";
         this.action = null;
-        this.movementSpeed = 8;
+        this.movementSpeed = 6;
 
         this.hitboxes = [];
         this.hurtboxes = [];
@@ -85,10 +85,11 @@ class Player extends Entity {
 
         // Standing attack
         if (this.state == "standing") {
-            startup = new Effect(5, (currentFrame) => {
+            startup = new Effect(3, (currentFrame) => {
                 console.log("startup frames");
 
                 // alter hurtbox?
+                // TODO: maybe turn currentframe into currentframe from start of effect?
                 if (currentFrame == 2) {
                     console.log("HOLLA AT YO BOI");
                 }
@@ -112,30 +113,33 @@ class Player extends Entity {
                 }
             });
 
-            recovery = new Effect(8, () => {
+            recovery = new Effect(5, () => {
                 console.log("recovery frames");
             });
         }
 
         // Crouching attack
         if (this.state == "crouching") {
-            startup = new Effect(8, (currentFrame) => {
+            startup = new Effect(10, (currentFrameForSegment) => {
                 console.log("startup frames");
                 // alter hurtbox?
-                if (currentFrame == 2) {
+                hurtbox = new Hurtbox(this, 100, this.height - 10, this.positionX + (this.width / 2), this.positionY);
+                this.hurtboxes.push(hurtbox);
+
+                if (currentFrameForSegment == 2) {
                     console.log("HOLLA AT YO BOI");
                 }
             });
 
-            active = new Effect(5, () => {
+            active = new Effect(6, () => {
                 console.log("active frames");
 
                 // track which hitboxes are active using Player.hitbox array? OR do collision detection right here with these instances of hitbox and hurtbox
-                hitbox = new Hitbox(this, 150, 60, this.positionX + (this.width / 2), this.positionY /*+ (this.height / 2) - (50 / 2)*/, 1);
+                hitbox = new Hitbox(this, 150, 50, this.positionX + (this.width / 2), this.positionY /*+ (this.height / 2) - (50 / 2)*/, 1);
                 this.hitboxes.push(hitbox);
 
                 diff = 10;
-                hurtbox = new Hurtbox(this, hitbox.width - diff, hitbox.height - diff, hitbox.positionX, hitbox.positionY + diff / 2);
+                hurtbox = new Hurtbox(this, hitbox.width - diff, hitbox.height - diff, hitbox.positionX, hitbox.positionY);
                 this.hurtboxes.push(hurtbox);
 
                 for (let i = 0; i < this.game.entitiesArray.length; i++) {
@@ -145,8 +149,10 @@ class Player extends Entity {
                 }
             });
 
-            recovery = new Effect(12, () => {
-                hurtbox = new Hurtbox(this, 150, 60, this.positionX + (this.width / 2), this.positionY);
+            recovery = new Effect(16, (currentFrameForSegment) => {
+                hurtbox = new Hurtbox(this, 150, 50, this.positionX + (this.width / 2), this.positionY);
+                //console.log("currentFrameForSegement:", currentFrameForSegment * 10);
+                //hurtbox = new Hurtbox(this, 150 - (currentFrameForSegment * 10), 50, this.positionX, this.positionY);
                 this.hurtboxes.push(hurtbox);
                 console.log("recovery frames");
             });
