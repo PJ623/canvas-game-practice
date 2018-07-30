@@ -38,9 +38,9 @@ class Entity {
         }
 
         for(let i = 0; i < this.game.entitiesArray.length; i++){
-            console.log(this.id);
-            if(this.game.detectBoxCollision(this, this.game.entitiesArray[i]) && this.game.entitiesArray[i].id != this.id){
-                console.log("HD");
+            //console.log(this.id);
+            if(this.game.entitiesArray[i].id != this.id && this.game.detectBoxCollision(this, this.game.entitiesArray[i])){
+                console.log("Collision Entity.move 43");
             }
         }
 

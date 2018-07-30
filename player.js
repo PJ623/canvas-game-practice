@@ -8,6 +8,8 @@ class Player extends Entity {
         this.hitboxes = [];
         this.hurtboxes = [];
 
+        this.standingHeight = this.height;
+
         // TODO:
         // Side switching
 
@@ -99,6 +101,10 @@ class Player extends Entity {
             this.state = "attacking";
             this.action = new Action(startup, active, recovery);
         }
+    }
+
+    crouch() {
+        this.height = this.height / 2;
     }
 
     // @Override Entity.move()
