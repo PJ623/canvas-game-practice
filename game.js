@@ -63,6 +63,7 @@ class Game {
 
         this.context = this.canvas.getContext("2d");
 
+        // TODO: move into Game.start and move Game.inputsList to Player
         this.canvas.addEventListener("keydown", (e) => {
             if (e.keyCode == "32" || e.keyCode == "65" || e.keyCode == "68" || e.keyCode == "83") {
                 this.inputsList[e.keyCode] = true;

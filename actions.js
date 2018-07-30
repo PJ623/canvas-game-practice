@@ -13,15 +13,15 @@ class Action {
     execute() {
         if (this.currentFrame < this.startup.duration) {
             if (typeof this.startup.effect == "function") {
-                this.startup.effect();
+                this.startup.effect(this.currentFrame);
             }
         } else if ((this.currentFrame - this.startup.duration) < this.active.duration) {
             if (typeof this.active.effect == "function") {
-                this.active.effect();
+                this.active.effect(this.currentFrame);
             }
         } else if ((this.currentFrame - this.startup.duration - this.active.duration) < this.recovery.duration) {
             if (typeof this.recovery.effect == "function") {
-                this.recovery.effect();
+                this.recovery.effect(this.currentFrame);
             }
         }
         if (this.currentFrame == this.animationDuration) {
