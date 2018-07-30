@@ -83,16 +83,24 @@ class Player extends Entity {
 
         let diff;
 
+        let detectHit = function (hitbox) {
+            for (let i = 0; i < this.game.entitiesArray.length; i++) {
+                if (this.game.entitiesArray[i].id != this.id) {
+                    this.game.detectBoxCollision(hitbox, this.game.entitiesArray[i]);
+                    for (let j = 0; j < this.game.entitiesArray[i].hurtboxes.length; j++) {
+                        this.game.detectBoxCollision(hitbox, this.game.entitiesArray[i].hurtboxes[j]);
+                    }
+                }
+            }
+        }
+
         // Standing attack
         if (this.state == "standing") {
-            startup = new Effect(3, (currentFrame) => {
+            startup = new Effect(3, () => {
                 console.log("startup frames");
 
                 // alter hurtbox?
                 // TODO: maybe turn currentframe into currentframe from start of effect?
-                if (currentFrame == 2) {
-                    console.log("HOLLA AT YO BOI");
-                }
             });
 
             active = new Effect(3, () => {
@@ -106,11 +114,7 @@ class Player extends Entity {
                 hurtbox = new Hurtbox(this, hitbox.width - diff, hitbox.height - diff, hitbox.positionX, hitbox.positionY + diff / 2);
                 this.hurtboxes.push(hurtbox);
 
-                for (let i = 0; i < this.game.entitiesArray.length; i++) {
-                    if (this.game.entitiesArray[i].id != this.id) {
-                        this.game.detectBoxCollision(this.hitboxes[0], this.game.entitiesArray[i]);
-                    }
-                }
+                detectHit.call(this, hitbox);
             });
 
             recovery = new Effect(5, () => {
@@ -142,17 +146,11 @@ class Player extends Entity {
                 hurtbox = new Hurtbox(this, hitbox.width - diff, hitbox.height - diff, hitbox.positionX, hitbox.positionY);
                 this.hurtboxes.push(hurtbox);
 
-                for (let i = 0; i < this.game.entitiesArray.length; i++) {
-                    if (this.game.entitiesArray[i].id != this.id) {
-                        this.game.detectBoxCollision(this.hitboxes[0], this.game.entitiesArray[i]);
-                    }
-                }
+                detectHit.call(this, hitbox);
             });
 
-            recovery = new Effect(16, (currentFrameForSegment) => {
+            recovery = new Effect(16, () => {
                 hurtbox = new Hurtbox(this, 150, 50, this.positionX + (this.width / 2), this.positionY);
-                //console.log("currentFrameForSegement:", currentFrameForSegment * 10);
-                //hurtbox = new Hurtbox(this, 150 - (currentFrameForSegment * 10), 50, this.positionX, this.positionY);
                 this.hurtboxes.push(hurtbox);
                 console.log("recovery frames");
             });
@@ -166,7 +164,7 @@ class Player extends Entity {
 
     crouch() {
         this.height = this.standingHeight / 2;
-        this.width = this.standingWidth * 1.2;
+        this.width = this.standingWidth /** 1.2*/;
         this.state = "crouching";
     }
 
@@ -181,20 +179,6 @@ class Player extends Entity {
         if (this.state == "standing" || this.state == "crouching") {
             let newPositionX = this.positionX + x;
             let newPositionY = this.positionY + y;
-
-            // Turn into new function repositionInBounds?
-            if (this.game.detectBoundaryCollision(newPositionX, newPositionY, this)) {
-
-                if (newPositionX < 0)
-                    newPositionX = 0;
-                else if (newPositionX > (this.game.canvas.width - this.width))
-                    newPositionX = this.game.canvas.width - this.width;
-
-                if (newPositionY < 0)
-                    newPositionY = 0;
-                else if (newPositionY > (this.game.canvas.height - this.height))
-                    newPositionY = this.game.canvas.height - this.height;
-            }
 
             for (let i = 0; i < this.game.entitiesArray.length; i++) {
                 if (this.game.entitiesArray[i].id != this.id && this.game.detectBoxCollision(this, this.game.entitiesArray[i])) {
@@ -219,6 +203,20 @@ class Player extends Entity {
                 }
             }
 
+            // Turn into new function repositionInBounds?
+            if (this.game.detectBoundaryCollision(newPositionX, newPositionY, this)) {
+
+                if (newPositionX < 0)
+                    newPositionX = 0;
+                else if (newPositionX > (this.game.canvas.width - this.width))
+                    newPositionX = this.game.canvas.width - this.width;
+
+                if (newPositionY < 0)
+                    newPositionY = 0;
+                else if (newPositionY > (this.game.canvas.height - this.height))
+                    newPositionY = this.game.canvas.height - this.height;
+            }
+
             this.positionX = newPositionX;
             this.positionY = newPositionY;
         }
@@ -232,7 +230,6 @@ class Player extends Entity {
 
         if (this.hitboxes.length > 0) {
             for (let i = 0; i < this.hitboxes.length; i++) {
-                //this.game.context.beginPath();
                 this.hitboxes[i].render();
             }
         }

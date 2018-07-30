@@ -4,6 +4,7 @@ class Game {
     constructor(fps) {
         this.animation;
         this.player = new Player(this, 100, 150, "pink");
+        this.player2 = new Enemy(this, 100, 150, "green");
         this.canvas;
         this.context;
         this.inputsList = {};
@@ -65,13 +66,14 @@ class Game {
 
         // TODO: move into Game.start and move Game.inputsList to Player
         this.canvas.addEventListener("keydown", (e) => {
-            if (e.keyCode == "32" || e.keyCode == "65" || e.keyCode == "68" || e.keyCode == "83") {
+            if (e.keyCode == "32" || e.keyCode == "65" || e.keyCode == "68" || e.keyCode == "83"|| e.keyCode == "100" || e.keyCode == "102" || e.keyCode == "101" || e.keyCode == "96") {
                 this.inputsList[e.keyCode] = true;
+                console.log(e.keyCode);
             }
         });
 
         this.canvas.addEventListener("keyup", (e) => {
-            if (e.keyCode == "32" || e.keyCode == "65" || e.keyCode == "68" || e.keyCode == "83") {
+            if (e.keyCode == "32" || e.keyCode == "65" || e.keyCode == "68" || e.keyCode == "83" || e.keyCode == "100" || e.keyCode == "102" || e.keyCode == "101" || e.keyCode == "96") {
                 this.inputsList[e.keyCode] = false;
             }
         });
@@ -82,14 +84,16 @@ class Game {
     start() {
         console.log("Starting game.");
         this.player.spawn(0, 0);
+        this.player2.spawn(this.canvas.width - this.player2.width, 0);
         this.animation = setInterval(this.turn.bind(this), this.fps);
-        let enemy = new Enemy(this, 100, 150);
-        enemy.spawn(this.canvas.width - enemy.width - 200, 0);
+        //let enemy = new Enemy(this, 100, 150);
+        //enemy.spawn(this.canvas.width - enemy.width - 200, 0);
     }
 
     turn() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.player.processInputs();
+        this.player2.processInputs();
 
         for (let i = 0; i < this.entitiesArray.length; i++) {
             this.entitiesArray[i].render();
