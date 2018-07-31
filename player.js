@@ -1,9 +1,10 @@
 class Player extends Entity {
-    constructor(game, width, height, appearance) {
+    constructor(game, width, height, appearance, name) {
         super(game, width, height, appearance);
         this.state = "standing";
         this.action = null;
         this.movementSpeed = 6;
+        this.name = name;
 
         this.hitboxes = [];
         this.hurtboxes = [];
@@ -13,11 +14,6 @@ class Player extends Entity {
 
         // TODO:
         // Side switching
-        // Hit points
-
-        // make moveset
-        // stand move that has long range but poor recovery
-        // crouch move that has shorter range, but good recovery
     }
 
     processInputs() {
@@ -86,9 +82,16 @@ class Player extends Entity {
         let detectHit = function (hitbox) {
             for (let i = 0; i < this.game.entitiesArray.length; i++) {
                 if (this.game.entitiesArray[i].id != this.id) {
-                    this.game.detectBoxCollision(hitbox, this.game.entitiesArray[i]);
+                    // put this into hurtbox checks later lol. looks so redundant
+                    if (this.game.detectBoxCollision(hitbox, this.game.entitiesArray[i])) {
+                        this.action.hasHit = true;
+                        console.log("End the game already!");
+                    }
                     for (let j = 0; j < this.game.entitiesArray[i].hurtboxes.length; j++) {
-                        this.game.detectBoxCollision(hitbox, this.game.entitiesArray[i].hurtboxes[j]);
+                        if (this.game.detectBoxCollision(hitbox, this.game.entitiesArray[i].hurtboxes[j])) {
+                            this.action.hasHit = true;
+                            console.log("End the game already!");
+                        }
                     }
                 }
             }

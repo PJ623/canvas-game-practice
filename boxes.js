@@ -17,6 +17,6 @@ class Hurtbox extends Box {
 class Hitbox extends Box {
     constructor(player, width, height, positionX, positionY, damage) {
         super(player, width, height, "red", positionX, positionY);
-        this.damage = damage;
+        this.damage = damage; // Unused as it stands right now. Either incorporate or remove later
     }
 }

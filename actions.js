@@ -8,6 +8,7 @@ class Action {
         this.currentFrame = 0;
         this.currentFrameForSegment = 0;
         this.isDone = false;
+        this.hasHit = false; // Use this to determine whether game should reset or not.
     }
 
     // get callbacks! hmm make objects for startup, active, and recovery?

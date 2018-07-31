@@ -1,10 +1,8 @@
-/* Tentative Title: Pokey or TAG game with lots of movement*/
-
 class Game {
     constructor(fps) {
         this.animation;
-        this.player = new Player(this, 100, 150, "pink");
-        this.player2 = new Enemy(this, 100, 150, "green");
+        this.player = new Player(this, 100, 150, "pink", "Player 1");
+        this.player2 = new Enemy(this, 100, 150, "green", "Player 2");
         this.canvas;
         this.context;
         this.inputsList = {};
@@ -51,9 +49,6 @@ class Game {
                 }
             }
         }
-
-        // attacker.box1es[i]
-        // defender.box2es[i]
     }
 
     bind(canvas) {
@@ -66,7 +61,7 @@ class Game {
 
         // TODO: move into Game.start and move Game.inputsList to Player
         this.canvas.addEventListener("keydown", (e) => {
-            if (e.keyCode == "32" || e.keyCode == "65" || e.keyCode == "68" || e.keyCode == "83"|| e.keyCode == "100" || e.keyCode == "102" || e.keyCode == "101" || e.keyCode == "96") {
+            if (e.keyCode == "32" || e.keyCode == "65" || e.keyCode == "68" || e.keyCode == "83" || e.keyCode == "100" || e.keyCode == "102" || e.keyCode == "101" || e.keyCode == "96") {
                 this.inputsList[e.keyCode] = true;
                 console.log(e.keyCode);
             }
@@ -83,11 +78,9 @@ class Game {
 
     start() {
         console.log("Starting game.");
-        this.player.spawn(0, 0);
-        this.player2.spawn(this.canvas.width - this.player2.width, 0);
+        this.player.spawn(150, 0);
+        this.player2.spawn(this.canvas.width - this.player2.width - 150, 0);
         this.animation = setInterval(this.turn.bind(this), this.fps);
-        //let enemy = new Enemy(this, 100, 150);
-        //enemy.spawn(this.canvas.width - enemy.width - 200, 0);
     }
 
     turn() {
@@ -95,8 +88,30 @@ class Game {
         this.player.processInputs();
         this.player2.processInputs();
 
+        let victors = [];
+
+        // TODO: Fix rendering issue where Player 1 never overlaps Player 2
+        // TODO: determine who did action last
+        // TODO: render that entity last
         for (let i = 0; i < this.entitiesArray.length; i++) {
             this.entitiesArray[i].render();
+
+            if (this.entitiesArray[i].action && this.entitiesArray[i].action.hasHit) {
+                victors.push(this.entitiesArray[i]);
+            }
+        }
+
+        if (victors.length > 0) {
+            this.stop();
+
+            let str = "Victor(s): ";
+
+            for (let i = 0; i < victors.length; i++) {
+                console.log(victors[i].name);
+                str += victors[i].name + " ";
+            }
+
+            document.getElementById("victors").innerText = str;
         }
     }
 
