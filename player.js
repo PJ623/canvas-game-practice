@@ -99,9 +99,10 @@ class Player extends Entity {
 
         // Standing attack
         if (this.state == "standing") {
-            startup = new Effect(3, () => {
-                console.log("startup frames");
-
+            startup = new Effect(5, () => {
+                //console.log("startup frames");
+                hurtbox = new Hurtbox(this, 40, 60, this.positionX + this.width, this.positionY + (this.height / 2) - (60 / 2));
+                this.hurtboxes.push(hurtbox);
                 // alter hurtbox?
                 // TODO: maybe turn currentframe into currentframe from start of effect?
             });
@@ -110,7 +111,7 @@ class Player extends Entity {
                 console.log("active frames");
 
                 // track which hitboxes are active using Player.hitbox array? OR do collision detection right here with these instances of hitbox and hurtbox
-                hitbox = new Hitbox(this, 80, 70, this.positionX + (this.width), this.positionY + (this.height / 2) - (50 / 2), 1);
+                hitbox = new Hitbox(this, 80, 60, this.positionX + (this.width), this.positionY + (this.height / 2) - (60 / 2), 1);
                 this.hitboxes.push(hitbox);
 
                 diff = 20;
@@ -120,8 +121,10 @@ class Player extends Entity {
                 detectHit.call(this, hitbox);
             });
 
-            recovery = new Effect(5, () => {
+            recovery = new Effect(6, () => {
                 console.log("recovery frames");
+                hurtbox = new Hurtbox(this, 40, 60, this.positionX + this.width, this.positionY + (this.height / 2) - (60 / 2));
+                this.hurtboxes.push(hurtbox);
             });
         }
 
@@ -138,7 +141,7 @@ class Player extends Entity {
                 }
             });
 
-            active = new Effect(6, () => {
+            active = new Effect(5, () => {
                 console.log("active frames");
 
                 // track which hitboxes are active using Player.hitbox array? OR do collision detection right here with these instances of hitbox and hurtbox
@@ -152,8 +155,8 @@ class Player extends Entity {
                 detectHit.call(this, hitbox);
             });
 
-            recovery = new Effect(16, () => {
-                hurtbox = new Hurtbox(this, 150, 50, this.positionX + (this.width / 2), this.positionY);
+            recovery = new Effect(15, () => {
+                hurtbox = new Hurtbox(this, 110, 50, this.positionX + (this.width / 2), this.positionY);
                 this.hurtboxes.push(hurtbox);
                 console.log("recovery frames");
             });

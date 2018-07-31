@@ -7,6 +7,8 @@ class Game {
         this.context;
         this.inputsList = {};
         this.entitiesArray = [];
+        this.isDone = false;
+        this.victoryMessageEle;
 
         if (!fps)
             fps = 1000 / 60;
@@ -51,7 +53,7 @@ class Game {
         }
     }
 
-    bind(canvas) {
+    bind(canvas, victoryMessageEle) {
         if (typeof canvas == "string")
             this.canvas = document.getElementById(canvas);
         else
@@ -65,6 +67,11 @@ class Game {
                 this.inputsList[e.keyCode] = true;
                 console.log(e.keyCode);
             }
+
+            // r
+            if (e.keyCode == "82" && this.isDone) {
+                this.start();
+            }
         });
 
         this.canvas.addEventListener("keyup", (e) => {
@@ -74,13 +81,30 @@ class Game {
         });
 
         this.canvas.focus();
+
+        if (typeof victoryMessageEle == "string") {
+            this.victoryMessageEle = document.getElementById(victoryMessageEle);
+        } else {
+            this.victoryMessageEle = victoryMessageEle;
+        }
     }
 
     start() {
         console.log("Starting game.");
+        this.entitiesArray = [];
+
+        this.isDone = false;
+        this.player.action = null;
+        this.player2.action = null;
+
         this.player.spawn(150, 0);
+        this.player.stand();
+
         this.player2.spawn(this.canvas.width - this.player2.width - 150, 0);
+        this.player2.stand();
+
         this.animation = setInterval(this.turn.bind(this), this.fps);
+        this.victoryMessageEle.innerText = "";
     }
 
     turn() {
@@ -88,7 +112,7 @@ class Game {
         this.player.processInputs();
         this.player2.processInputs();
 
-        let victors = [];
+        let victors = new Array();
 
         // TODO: Fix rendering issue where Player 1 never overlaps Player 2
         // TODO: determine who did action last
@@ -102,21 +126,24 @@ class Game {
         }
 
         if (victors.length > 0) {
+            //this.isDone = true;
             this.stop();
 
             let str = "Victor(s): ";
 
             for (let i = 0; i < victors.length; i++) {
-                console.log(victors[i].name);
                 str += victors[i].name + " ";
             }
 
-            document.getElementById("victors").innerText = str;
+            this.victoryMessageEle.innerText = str + "\n Press 'r' to restart.";
         }
+
+        console.log(victors);
     }
 
     stop() {
         console.log("Stopping game.");
         clearInterval(this.animation);
+        this.isDone = true;
     }
 }
