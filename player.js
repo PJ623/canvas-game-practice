@@ -14,6 +14,7 @@ class Player extends Entity {
 
         // rework to get this to work
         this.inputsList = {};
+        console.log("this.inputsList:", this.inputsList);
 
         this.facing = facing; // To determine which way attacks should go
         console.log("facing:", this.facing);
@@ -29,19 +30,19 @@ class Player extends Entity {
         let speedY = 0;
 
         // There's got to be a better way, lol
-        if (this.name == "Player 1") {
+        //if (this.name == "Player 1") {
             // a
-            if (this.game.inputsList["65"]) {
+            if (this.inputsList["l"]) {
                 speedX += -this.movementSpeed;
             }
 
             // d
-            if (this.game.inputsList["68"]) {
+            if (this.inputsList["r"]) {
                 speedX += this.movementSpeed;
             }
 
             //s. placed later to override speeds from a or d
-            if (this.game.inputsList["83"]) {
+            if (this.inputsList["d"]) {
                 speedX = 0;
                 speedY = 0;
                 if (!this.action) {
@@ -54,11 +55,11 @@ class Player extends Entity {
             }
 
             // space
-            if (this.game.inputsList["32"]) {
+            if (this.inputsList["attack"]) {
                 this.attack();
             }
 
-        } else if (this.name == "Player 2") {
+        /*} else if (this.name == "Player 2") {
             // a
             if (this.game.inputsList["100"]) {
                 speedX += -this.movementSpeed;
@@ -86,7 +87,7 @@ class Player extends Entity {
             if (this.game.inputsList["96"]) {
                 this.attack();
             }
-        }
+        }*/
 
         this.move(speedX, speedY);
 
