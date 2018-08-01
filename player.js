@@ -1,5 +1,5 @@
 class Player extends Entity {
-    constructor(game, width, height, appearance, name) {
+    constructor(game, width, height, appearance, name, facing) {
         super(game, width, height, appearance);
         this.state = "standing";
         this.action = null;
@@ -12,6 +12,11 @@ class Player extends Entity {
         this.standingHeight = this.height;
         this.standingWidth = this.width;
 
+        // rework to get this to work
+        this.inputsList = {};
+
+        this.facing = facing; // To determine which way attacks should go
+        console.log("facing:", this.facing);
         // TODO:
         // Side switching
     }
@@ -23,32 +28,64 @@ class Player extends Entity {
         let speedX = 0;
         let speedY = 0;
 
-        // a
-        if (this.game.inputsList["65"]) {
-            speedX += -this.movementSpeed;
-        }
-
-        // d
-        if (this.game.inputsList["68"]) {
-            speedX += this.movementSpeed;
-        }
-
-        //s. placed later to override speeds from a or d
-        if (this.game.inputsList["83"]) {
-            speedX = 0;
-            speedY = 0;
-            if (!this.action) {
-                this.crouch();
+        // There's got to be a better way, lol
+        if (this.name == "Player 1") {
+            // a
+            if (this.game.inputsList["65"]) {
+                speedX += -this.movementSpeed;
             }
-        } else {
-            if (!this.action) {
-                this.stand();
-            }
-        }
 
-        // space
-        if (this.game.inputsList["32"]) {
-            this.attack();
+            // d
+            if (this.game.inputsList["68"]) {
+                speedX += this.movementSpeed;
+            }
+
+            //s. placed later to override speeds from a or d
+            if (this.game.inputsList["83"]) {
+                speedX = 0;
+                speedY = 0;
+                if (!this.action) {
+                    this.crouch();
+                }
+            } else {
+                if (!this.action) {
+                    this.stand();
+                }
+            }
+
+            // space
+            if (this.game.inputsList["32"]) {
+                this.attack();
+            }
+
+        } else if (this.name == "Player 2") {
+            // a
+            if (this.game.inputsList["100"]) {
+                speedX += -this.movementSpeed;
+            }
+
+            // d
+            if (this.game.inputsList["102"]) {
+                speedX += this.movementSpeed;
+            }
+
+            //s. placed later to override speeds from a or d
+            if (this.game.inputsList["101"]) {
+                speedX = 0;
+                speedY = 0;
+                if (!this.action) {
+                    this.crouch();
+                }
+            } else {
+                if (!this.action) {
+                    this.stand();
+                }
+            }
+
+            // space
+            if (this.game.inputsList["96"]) {
+                this.attack();
+            }
         }
 
         this.move(speedX, speedY);
@@ -79,6 +116,32 @@ class Player extends Entity {
 
         let diff;
 
+        // MESS Move into Box?
+        let offsetX = function (width) {
+            //console.log("offsetX", this);
+            if (this.facing == "right") {
+                return this.width;
+            } else if (this.facing == "left") {
+                return -width;
+            }
+        }
+
+        let offsetWithDiff = function (diff) {
+            if (this.facing == "left") {
+                return diff;
+            } else if (this.facing == "right") {
+                return 0;
+            }
+        }
+
+        let offsetFromMiddle = function () {
+            if (this.facing == "left") {
+                return this.width / 2;
+            } else if (this.facing == "right") {
+                return -this.width / 2;
+            }
+        }
+
         let detectHit = function (hitbox) {
             for (let i = 0; i < this.game.entitiesArray.length; i++) {
                 if (this.game.entitiesArray[i].id != this.id) {
@@ -101,7 +164,9 @@ class Player extends Entity {
         if (this.state == "standing") {
             startup = new Effect(5, () => {
                 //console.log("startup frames");
-                hurtbox = new Hurtbox(this, 40, 60, this.positionX + this.width, this.positionY + (this.height / 2) - (60 / 2));
+                hurtbox = new Hurtbox(this, 40, 60, this.positionX + offsetX.call(this, 40)/*this.width*/, this.positionY + (this.height / 2) - (60 / 2));
+                // hurtbox = new Hurtbox(this, 40, 60, this.positionX - 40, this.positionY + (this.height / 2) - (60 / 2));
+                // hurtbox = new Hurtbox(this, width, height, this.position + (-width || Player.width)), this.positionY + (this.height/2) 0 (60/2);
                 this.hurtboxes.push(hurtbox);
                 // alter hurtbox?
                 // TODO: maybe turn currentframe into currentframe from start of effect?
@@ -111,11 +176,11 @@ class Player extends Entity {
                 console.log("active frames");
 
                 // track which hitboxes are active using Player.hitbox array? OR do collision detection right here with these instances of hitbox and hurtbox
-                hitbox = new Hitbox(this, 80, 60, this.positionX + (this.width), this.positionY + (this.height / 2) - (60 / 2), 1);
+                hitbox = new Hitbox(this, 80, 60, this.positionX + offsetX.call(this, 80), this.positionY + (this.height / 2) - (60 / 2), 1);
                 this.hitboxes.push(hitbox);
 
                 diff = 20;
-                hurtbox = new Hurtbox(this, hitbox.width - diff, hitbox.height - diff, hitbox.positionX, hitbox.positionY + diff / 2);
+                hurtbox = new Hurtbox(this, hitbox.width - diff, hitbox.height - diff, hitbox.positionX + offsetWithDiff.call(this, diff) /* +diff or +0 depending on which side facing*/, hitbox.positionY + diff / 2);
                 this.hurtboxes.push(hurtbox);
 
                 detectHit.call(this, hitbox);
@@ -123,7 +188,7 @@ class Player extends Entity {
 
             recovery = new Effect(6, () => {
                 console.log("recovery frames");
-                hurtbox = new Hurtbox(this, 40, 60, this.positionX + this.width, this.positionY + (this.height / 2) - (60 / 2));
+                hurtbox = new Hurtbox(this, 40, 60, this.positionX + offsetX.call(this, 40), this.positionY + (this.height / 2) - (60 / 2));
                 this.hurtboxes.push(hurtbox);
             });
         }
@@ -133,7 +198,7 @@ class Player extends Entity {
             startup = new Effect(10, (currentFrameForSegment) => {
                 console.log("startup frames");
                 // alter hurtbox?
-                hurtbox = new Hurtbox(this, 100, this.height - 10, this.positionX + (this.width / 2), this.positionY);
+                hurtbox = new Hurtbox(this, 100, this.height - 10, this.positionX + (offsetX.call(this, 100) / 2), this.positionY);
                 this.hurtboxes.push(hurtbox);
 
                 if (currentFrameForSegment == 2) {
@@ -145,18 +210,20 @@ class Player extends Entity {
                 console.log("active frames");
 
                 // track which hitboxes are active using Player.hitbox array? OR do collision detection right here with these instances of hitbox and hurtbox
-                hitbox = new Hitbox(this, 150, 50, this.positionX + (this.width / 2), this.positionY /*+ (this.height / 2) - (50 / 2)*/, 1);
+
+                // Trouble getting hitbox to emerge from middle of entity
+                hitbox = new Hitbox(this, 150, 50, this.positionX + offsetX.call(this, 150) + offsetFromMiddle.call(this), this.positionY /*+ (this.height / 2) - (50 / 2)*/, 1);
                 this.hitboxes.push(hitbox);
 
                 diff = 10;
-                hurtbox = new Hurtbox(this, hitbox.width - diff, hitbox.height - diff, hitbox.positionX, hitbox.positionY);
+                hurtbox = new Hurtbox(this, hitbox.width - diff, hitbox.height - diff, hitbox.positionX + offsetWithDiff.call(this, diff), hitbox.positionY);
                 this.hurtboxes.push(hurtbox);
 
                 detectHit.call(this, hitbox);
             });
 
             recovery = new Effect(15, () => {
-                hurtbox = new Hurtbox(this, 110, 50, this.positionX + (this.width / 2), this.positionY);
+                hurtbox = new Hurtbox(this, 110, 50, this.positionX + offsetX.call(this, 110) + offsetFromMiddle.call(this), this.positionY);
                 this.hurtboxes.push(hurtbox);
                 console.log("recovery frames");
             });

@@ -1,8 +1,8 @@
 class Game {
     constructor(fps) {
         this.animation;
-        this.player = new Player(this, 100, 150, "pink", "Player 1");
-        this.player2 = new Enemy(this, 100, 150, "green", "Player 2");
+        this.player = new Player(this, 100, 150, "pink", "Player 1", "right");
+        this.player2 = new Player(this, 100, 150, "green", "Player 2", "left"); // TODO: get different controls for players
         this.canvas;
         this.context;
         this.inputsList = {};
@@ -109,15 +109,26 @@ class Game {
 
     turn() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.player.processInputs();
-        this.player2.processInputs();
+
+        // Order of processInputs linked to ghost whiff punish bug
+        //this.player.processInputs();
+        //this.player2.processInputs();
+
 
         let victors = new Array();
 
         // TODO: Fix rendering issue where Player 1 never overlaps Player 2
         // TODO: determine who did action last
         // TODO: render that entity last
+
+        // Ghost hit bug
+        // Hmm, detects hit, saves victor
+        // then tries 2p action
+        // BUT processInputs clears existing hurtbox which p1 already hit
+        // then renders
+        // looks like ghost hit 
         for (let i = 0; i < this.entitiesArray.length; i++) {
+            this.entitiesArray[i].processInputs();
             this.entitiesArray[i].render();
 
             if (this.entitiesArray[i].action && this.entitiesArray[i].action.hasHit) {
@@ -126,7 +137,6 @@ class Game {
         }
 
         if (victors.length > 0) {
-            //this.isDone = true;
             this.stop();
 
             let str = "Victor(s): ";
@@ -137,8 +147,6 @@ class Game {
 
             this.victoryMessageEle.innerText = str + "\n Press 'r' to restart.";
         }
-
-        console.log(victors);
     }
 
     stop() {
