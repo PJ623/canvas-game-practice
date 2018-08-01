@@ -25,7 +25,6 @@ class Action {
                 this.recovery.effect(this.currentFrameForSegment);
         }
         if (this.currentFrame == this.animationDuration) {
-            console.log("returning false");
             this.isDone = true;
         }
 

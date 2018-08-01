@@ -3,7 +3,7 @@ class Player extends Entity {
         super(game, width, height, appearance);
         this.state = "standing";
         this.action = null;
-        this.movementSpeed = 6;
+        this.movementSpeed = 5;
         this.name = name;
 
         this.hitboxes = [];
@@ -60,65 +60,41 @@ class Player extends Entity {
         }
     }
 
-    //jump()?
-
+    // TODO: Restructure/revamp this sometime
     attack() {
-        //let hitLanded;
         let startup;
         let active;
         let recovery;
         let hitbox;
         let hurtbox;
-
         let diff;
 
         // MESSY Move into Box?
         let offsetX = function (width) {
-            if (this.facing == "right") {
+            if (this.facing == "right")
                 return this.width;
-            } else if (this.facing == "left") {
+            else if (this.facing == "left")
                 return -width;
-            }
         }
 
         let offsetWithDiff = function (diff) {
-            if (this.facing == "left") {
+            if (this.facing == "left")
                 return diff;
-            } else if (this.facing == "right") {
+            else if (this.facing == "right")
                 return 0;
-            }
         }
 
         let offsetFromMiddle = function () {
-            if (this.facing == "left") {
+            if (this.facing == "left")
                 return this.width / 2;
-            } else if (this.facing == "right") {
+            else if (this.facing == "right")
                 return -this.width / 2;
-            }
-        }
-
-        let detectHit = function (hitbox) {
-            for (let i = 0; i < this.game.entitiesArray.length; i++) {
-                if (this.game.entitiesArray[i].id != this.id) {
-                    // put this into hurtbox checks later lol. looks so redundant
-                    if (this.game.detectBoxCollision(hitbox, this.game.entitiesArray[i])) {
-                        this.action.hasHit = true;
-                        console.log("End the game already!");
-                    }
-                    for (let j = 0; j < this.game.entitiesArray[i].hurtboxes.length; j++) {
-                        if (this.game.detectBoxCollision(hitbox, this.game.entitiesArray[i].hurtboxes[j])) {
-                            this.action.hasHit = true;
-                            console.log("End the game already!");
-                        }
-                    }
-                }
-            }
         }
 
         // Standing attack
         if (this.state == "standing") {
             startup = new Effect(5, () => {
-                hurtbox = new Hurtbox(this, 40, 60, this.positionX + offsetX.call(this, 40)/*this.width*/, this.positionY + (this.height / 2) - (60 / 2));
+                hurtbox = new Hurtbox(this, 40, 60, this.positionX + offsetX.call(this, 40), this.positionY + (this.height / 2) - (60 / 2));
                 this.hurtboxes.push(hurtbox);
             });
 
@@ -129,8 +105,6 @@ class Player extends Entity {
                 diff = 20;
                 hurtbox = new Hurtbox(this, hitbox.width - diff, hitbox.height - diff, hitbox.positionX + offsetWithDiff.call(this, diff) /* +diff or +0 depending on which side facing*/, hitbox.positionY + diff / 2);
                 this.hurtboxes.push(hurtbox);
-
-                detectHit.call(this, hitbox);
             });
 
             recovery = new Effect(6, () => {
@@ -153,8 +127,6 @@ class Player extends Entity {
                 diff = 10;
                 hurtbox = new Hurtbox(this, hitbox.width - diff, hitbox.height - diff, hitbox.positionX + offsetWithDiff.call(this, diff), hitbox.positionY);
                 this.hurtboxes.push(hurtbox);
-
-                detectHit.call(this, hitbox);
             });
 
             recovery = new Effect(15, () => {

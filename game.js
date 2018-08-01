@@ -9,7 +9,8 @@ class Game {
         this.entitiesArray = [];
         this.isDone = false;
         this.winMessageEle;
-        this.lastActor = null;
+        this.lastAttacker = null;
+        this.winners = [];
 
         if (!fps)
             fps = 1000 / 60;
@@ -62,41 +63,38 @@ class Game {
 
         this.canvas.addEventListener("keydown", (e) => {
             switch (e.keyCode) {
+                // Player 1
                 case 65:
                     // Lots of similar code. Package in a function later?
                     this.player1.inputsList["l"] = true;
-                    this.lastActor = this.player1;
                     break;
                 case 68:
                     this.player1.inputsList["r"] = true;
-                    this.lastActor = this.player1;
                     break;
                 case 83:
                     this.player1.inputsList["d"] = true;
-                    this.lastActor = this.player1;
                     break;
                 case 32:
                     this.player1.inputsList["attack"] = true;
-                    this.lastActor = this.player1;
+                    //Lock lastAttacker until action is done
+                    if (!this.player1.action)
+                        this.lastAttacker = this.player1;
                     break;
-            }
-
-            switch (e.keyCode) {
+                // Player 2
                 case 100:
                     this.player2.inputsList["l"] = true;
-                    this.lastActor = this.player2;
                     break;
                 case 102:
                     this.player2.inputsList["r"] = true;
-                    this.lastActor = this.player2;
                     break;
                 case 101:
                     this.player2.inputsList["d"] = true;
-                    this.lastActor = this.player2;
                     break;
                 case 96:
                     this.player2.inputsList["attack"] = true;
-                    this.lastActor = this.player2;
+                    //Lock lastAttacker until action is done
+                    if (!this.player2.action)
+                        this.lastAttacker = this.player2;
                     break;
             }
 
@@ -107,6 +105,7 @@ class Game {
 
         this.canvas.addEventListener("keyup", (e) => {
             switch (e.keyCode) {
+                // Player 1
                 case 65:
                     this.player1.inputsList["l"] = false;
                     break;
@@ -119,9 +118,8 @@ class Game {
                 case 32:
                     this.player1.inputsList["attack"] = false;
                     break;
-            }
 
-            switch (e.keyCode) {
+                // Player 2
                 case 100:
                     this.player2.inputsList["l"] = false;
                     break;
@@ -146,21 +144,27 @@ class Game {
     }
 
     start() {
-        console.log("Starting game.");
         this.entitiesArray = [];
-
+        this.winners = [];
         this.isDone = false;
         this.player1.action = null;
         this.player2.action = null;
+        this.lastAttacker = null;
 
-        this.player1.spawn(150, 0);
+        // New start spacing from x = 150 is a temporary fix to strange 2P first strike bug
+        this.player1.spawn(140, 0);
         this.player1.stand();
 
-        this.player2.spawn(this.canvas.width - this.player2.width - 150, 0);
+        this.player2.spawn(this.canvas.width - this.player2.width - 140, 0);
         this.player2.stand();
 
-        this.animation = setInterval(this.turn.bind(this), this.fps);
         this.winMessageEle.innerText = "";
+
+        for (let i = 0; i < this.entitiesArray.length; i++) {
+            this.entitiesArray[i].render();
+        }
+
+        this.animation = setInterval(this.turn.bind(this), this.fps);
     }
 
     turn() {
@@ -170,14 +174,22 @@ class Game {
         //this.player.processInputs();
         //this.player2.processInputs();
 
-        // Ghost whiff punish bug
+        // BUG: ghost whiff punish bug
         // Hmm, detects hit, saves victor
         // then tries 2p action
         // BUT processInputs clears existing hurtbox which p1 already hit
         // then renders
         // looks like ghost hit 
 
-        if (this.lastActor && this.lastActor.name == "Player 1") {
+        // BUG: first strike bug
+        // When player 1 and player 2 jab at round start at the same time, player 2 wins
+        // player 1 and player 2 should tie...
+
+        //if (this.lastAttacker)
+        //    console.log("lastAttacker:", this.lastAttacker);
+
+
+        if (this.lastAttacker && this.lastAttacker.name == "Player 1") {
             this.player2.processInputs();
             this.player1.processInputs();
             this.player2.render();
@@ -189,27 +201,51 @@ class Game {
             this.player2.render();
         }
 
-        let winners = new Array();
+        let winner;
 
+        // LOL, sorry for the big mess
+        // My attempt to fix the first strike bug
+        // This does collision detection after both players have had their inputs processed
+        // Old method did collision detection during player's attacks, which naturally
+        // do collision detection in the order the attacks were executed
+        // This solution does not seem to solve the bug though...
         for (let i = 0; i < this.entitiesArray.length; i++) {
-            if (this.entitiesArray[i].action && this.entitiesArray[i].action.hasHit)
-                winners.push(this.entitiesArray[i]);
+            let currentEntity = this.entitiesArray[i];
+            if (currentEntity.hitboxes.length > 0) {
+                for (let j = 0; j < currentEntity.hitboxes.length; j++) {
+                    let currentHitbox = currentEntity.hitboxes[j];
+                    for (let k = 0; k < this.entitiesArray.length; k++) {
+                        let currentTarget = this.entitiesArray[k];
+                        if (currentTarget.id != currentEntity.id) {
+                            // TODO: Turn entity into a hurtbox
+                            if (this.detectBoxCollision(currentHitbox, currentTarget))
+                                winner = currentEntity;
+                            for (let l = 0; l < currentTarget.hurtboxes.length; l++) {
+                                if (this.detectBoxCollision(currentHitbox, currentTarget.hurtboxes[l]))
+                                    winner = currentEntity;
+                            }
+                            if (winner)
+                                this.winners.push(winner);
+                        }
+                    }
+                }
+            }
         }
 
-        if (winners.length > 0) {
+        if (this.winners.length > 0) {
             this.stop();
+            console.log("winners:", this.winners);
 
             let str = "Winner(s): ";
 
-            for (let i = 0; i < winners.length; i++)
-                str += winners[i].name + " ";
+            for (let i = 0; i < this.winners.length; i++)
+                str += this.winners[i].name + " ";
 
             this.winMessageEle.innerText = str + "\n Press 'r' to restart.";
         }
     }
 
     stop() {
-        console.log("Stopping game.");
         clearInterval(this.animation);
         this.isDone = true;
     }

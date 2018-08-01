@@ -14,7 +14,6 @@ class Entity {
         this.positionY = y;
         this.game.entitiesArray.push(this);
         this.id = this.game.entitiesArray.length - 1;
-
         this.move(0, 0);
     }
 
