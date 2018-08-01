@@ -8,8 +8,7 @@ class Game {
         this.inputsList = {};
         this.entitiesArray = [];
         this.isDone = false;
-        this.victoryMessageEle;
-
+        this.winMessageEle;
         this.lastActor = null;
 
         if (!fps)
@@ -46,16 +45,14 @@ class Game {
         for (let i = box1.left; i < box1.right; i++) {
             if (i >= box2.left && i <= box2.right) {
                 for (let j = box1.bottom; j < box1.top; j++) {
-                    if (j >= box2.bottom && j <= box2.top) {
-                        console.log("COLLISION DETECTED AT x:", i, "y:", j);
+                    if (j >= box2.bottom && j <= box2.top)
                         return true;
-                    }
                 }
             }
         }
     }
 
-    bind(canvas, victoryMessageEle) {
+    bind(canvas, winMessageEle) {
         if (typeof canvas == "string")
             this.canvas = document.getElementById(canvas);
         else
@@ -63,20 +60,12 @@ class Game {
 
         this.context = this.canvas.getContext("2d");
 
-        // TODO: move into Game.start and move Game.inputsList to Player
         this.canvas.addEventListener("keydown", (e) => {
-
-            // l, r, d, attack
-            /*if (e.keyCode == "65" || e.keyCode == "68" || e.keyCode == "83" || e.keyCode == "32") {
-                this.player1.inputsList[e.keyCode] = true;
-                console.log(this.player1.inputsList);
-            }*/
-            console.log(e.keyCode);
             switch (e.keyCode) {
                 case 65:
+                    // Lots of similar code. Package in a function later?
                     this.player1.inputsList["l"] = true;
                     this.lastActor = this.player1;
-                    console.log("p1 left");
                     break;
                 case 68:
                     this.player1.inputsList["r"] = true;
@@ -92,9 +81,6 @@ class Game {
                     break;
             }
 
-
-            // l, r, d, attack
-            //if (e.keyCode == "100" || e.keyCode == "102" || e.keyCode == "101" || e.keyCode == "96") {
             switch (e.keyCode) {
                 case 100:
                     this.player2.inputsList["l"] = true;
@@ -113,27 +99,13 @@ class Game {
                     this.lastActor = this.player2;
                     break;
             }
-            //this.player2.inputsList[e.keyCode] = true;
-            //console.log(this.player2.inputsList);
-            //}
 
-            // 'r' key, restart
-
-            if (e.keyCode == "82" && this.isDone) {
+            // 'r' key for restarting game
+            if (e.keyCode == "82" && this.isDone)
                 this.start();
-            }
         });
 
         this.canvas.addEventListener("keyup", (e) => {
-            /*if (e.keyCode == "32" || e.keyCode == "65" || e.keyCode == "68" || e.keyCode == "83") {
-                this.player1.inputsList[e.keyCode] = false;
-            }*/
-
-            /*
-            if (e.keyCode == "100" || e.keyCode == "102" || e.keyCode == "101" || e.keyCode == "96") {
-                this.player2.inputsList[e.keyCode] = false;
-            }*/
-
             switch (e.keyCode) {
                 case 65:
                     this.player1.inputsList["l"] = false;
@@ -167,11 +139,10 @@ class Game {
 
         this.canvas.focus();
 
-        if (typeof victoryMessageEle == "string") {
-            this.victoryMessageEle = document.getElementById(victoryMessageEle);
-        } else {
-            this.victoryMessageEle = victoryMessageEle;
-        }
+        if (typeof winMessageEle == "string")
+            this.winMessageEle = document.getElementById(winMessageEle);
+        else
+            this.winMessageEle = winMessageEle;
     }
 
     start() {
@@ -189,7 +160,7 @@ class Game {
         this.player2.stand();
 
         this.animation = setInterval(this.turn.bind(this), this.fps);
-        this.victoryMessageEle.innerText = "";
+        this.winMessageEle.innerText = "";
     }
 
     turn() {
@@ -199,44 +170,41 @@ class Game {
         //this.player.processInputs();
         //this.player2.processInputs();
 
-        //onsole.log("LA:", this.lastActor);
-
-        let victors = new Array();
-
-        // Ghost hit bug
+        // Ghost whiff punish bug
         // Hmm, detects hit, saves victor
         // then tries 2p action
         // BUT processInputs clears existing hurtbox which p1 already hit
         // then renders
         // looks like ghost hit 
-        for (let i = 0; i < this.entitiesArray.length; i++) {
-            this.entitiesArray[i].processInputs();
-            //this.entitiesArray[i].render();
-
-            if (this.entitiesArray[i].action && this.entitiesArray[i].action.hasHit) {
-                victors.push(this.entitiesArray[i]);
-            }
-        }
 
         if (this.lastActor && this.lastActor.name == "Player 1") {
-            console.log("LA:", this.lastActor);
+            this.player2.processInputs();
+            this.player1.processInputs();
             this.player2.render();
             this.player1.render();
         } else {
+            this.player1.processInputs();
+            this.player2.processInputs();
             this.player1.render();
             this.player2.render();
         }
 
-        if (victors.length > 0) {
+        let winners = new Array();
+
+        for (let i = 0; i < this.entitiesArray.length; i++) {
+            if (this.entitiesArray[i].action && this.entitiesArray[i].action.hasHit)
+                winners.push(this.entitiesArray[i]);
+        }
+
+        if (winners.length > 0) {
             this.stop();
 
-            let str = "Victor(s): ";
+            let str = "Winner(s): ";
 
-            for (let i = 0; i < victors.length; i++) {
-                str += victors[i].name + " ";
-            }
+            for (let i = 0; i < winners.length; i++)
+                str += winners[i].name + " ";
 
-            this.victoryMessageEle.innerText = str + "\n Press 'r' to restart.";
+            this.winMessageEle.innerText = str + "\n Press 'r' to restart.";
         }
     }
 

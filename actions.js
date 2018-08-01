@@ -1,4 +1,3 @@
-
 class Action {
     constructor(startup, active, recovery) {
         this.startup = startup;
@@ -11,23 +10,19 @@ class Action {
         this.hasHit = false; // Use this to determine whether game should reset or not.
     }
 
-    // get callbacks! hmm make objects for startup, active, and recovery?
     execute() {
         if (this.currentFrame < this.startup.duration) {
             this.currentFrameForSegment = this.currentFrame;
-            if (typeof this.startup.effect == "function") {
+            if (typeof this.startup.effect == "function")
                 this.startup.effect(this.currentFrameForSegment);
-            }
         } else if ((this.currentFrame - this.startup.duration) < this.active.duration) {
             this.currentFrameForSegment = this.currentFrame - this.startup.duration;
-            if (typeof this.active.effect == "function") {
+            if (typeof this.active.effect == "function")
                 this.active.effect(this.currentFrameForSegment);
-            }
         } else if ((this.currentFrame - this.startup.duration - this.active.duration) < this.recovery.duration) {
             this.currentFrameForSegment = this.currentFrame - this.startup.duration - this.active.duration;
-            if (typeof this.recovery.effect == "function") {
+            if (typeof this.recovery.effect == "function")
                 this.recovery.effect(this.currentFrameForSegment);
-            }
         }
         if (this.currentFrame == this.animationDuration) {
             console.log("returning false");
@@ -40,14 +35,8 @@ class Action {
 
 class Effect {
     // effect is callback
-    constructor(/*executor,*/ duration, effect) {
-        //this.executor = executor;
+    constructor(duration, effect) {
         this.duration = duration;
         this.effect = effect;
     }
-
-    /*
-    getThis(){
-        console.log(this);
-    }*/
 }

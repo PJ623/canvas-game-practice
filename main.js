@@ -1,3 +1,3 @@
 let game = new Game();
-game.bind("game", "victors");
+game.bind("game", "winners");
 game.start();

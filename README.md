@@ -1,3 +1,3 @@
-# Main Todo
+# Pokey
 
-* fix rendering bug
+A simple fighting game.

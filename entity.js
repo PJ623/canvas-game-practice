@@ -18,36 +18,6 @@ class Entity {
         this.move(0, 0);
     }
 
-    // maybe don't need anymore?
-    move(x, y) {
-        let newPositionX = this.positionX + x;
-        let newPositionY = this.positionY + y;
-
-        // Turn into new function repositionInBounds?
-        if (this.game.detectBoundaryCollision(newPositionX, newPositionY, this)) {
-
-            if (newPositionX < 0)
-                newPositionX = 0;
-            else if (newPositionX > (this.game.canvas.width - this.width))
-                newPositionX = this.game.canvas.width - this.width;
-
-            if (newPositionY < 0)
-                newPositionY = 0;
-            else if (newPositionY > (this.game.canvas.height - this.height))
-                newPositionY = this.game.canvas.height - this.height;
-        }
-
-        for(let i = 0; i < this.game.entitiesArray.length; i++){
-            //console.log(this.id);
-            if(this.game.entitiesArray[i].id != this.id && this.game.detectBoxCollision(this, this.game.entitiesArray[i])){
-                console.log("Collision Entity.move 43");
-            }
-        }
-
-        this.positionX = newPositionX;
-        this.positionY = newPositionY;
-    }
-
     render() {
         this.game.context.beginPath();
         this.game.context.fillStyle = this.appearance;
