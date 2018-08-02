@@ -98,7 +98,7 @@ class Player extends Entity {
                 this.hurtboxes.push(hurtbox);
             });
 
-            active = new Effect(3, () => {
+            active = new Effect(2, () => {
                 hitbox = new Hitbox(this, 80, 60, this.positionX + offsetX.call(this, 80), this.positionY + (this.height / 2) - (60 / 2), 1);
                 this.hitboxes.push(hitbox);
 
@@ -107,7 +107,7 @@ class Player extends Entity {
                 this.hurtboxes.push(hurtbox);
             });
 
-            recovery = new Effect(6, () => {
+            recovery = new Effect(8, () => {
                 hurtbox = new Hurtbox(this, 40, 60, this.positionX + offsetX.call(this, 40), this.positionY + (this.height / 2) - (60 / 2));
                 this.hurtboxes.push(hurtbox);
             });
@@ -115,22 +115,22 @@ class Player extends Entity {
 
         // Crouching attack
         if (this.state == "crouching") {
-            startup = new Effect(10, () => {
+            startup = new Effect(8, () => {
                 hurtbox = new Hurtbox(this, 100, this.height - 10, this.positionX + (offsetX.call(this, 100) / 2), this.positionY);
                 this.hurtboxes.push(hurtbox);
             });
 
-            active = new Effect(5, () => {
+            active = new Effect(4, () => {
                 hitbox = new Hitbox(this, 150, 50, this.positionX + offsetX.call(this, 150) + offsetFromMiddle.call(this), this.positionY /*+ (this.height / 2) - (50 / 2)*/, 1);
                 this.hitboxes.push(hitbox);
 
-                diff = 10;
+                diff = 20;
                 hurtbox = new Hurtbox(this, hitbox.width - diff, hitbox.height - diff, hitbox.positionX + offsetWithDiff.call(this, diff), hitbox.positionY);
                 this.hurtboxes.push(hurtbox);
             });
 
-            recovery = new Effect(15, () => {
-                hurtbox = new Hurtbox(this, 110, 50, this.positionX + offsetX.call(this, 110) + offsetFromMiddle.call(this), this.positionY);
+            recovery = new Effect(14, () => {
+                hurtbox = new Hurtbox(this, 100, 50, this.positionX + offsetX.call(this, 110) + offsetFromMiddle.call(this), this.positionY);
                 this.hurtboxes.push(hurtbox);
             });
         }

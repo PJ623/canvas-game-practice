@@ -43,10 +43,10 @@ class Game {
         box2 = box2.positionOfPoints;
 
         // WORKS, but I want to make this more efficient
-        for (let i = box1.left; i < box1.right; i++) {
-            if (i >= box2.left && i <= box2.right) {
-                for (let j = box1.bottom; j < box1.top; j++) {
-                    if (j >= box2.bottom && j <= box2.top)
+        for (let i = box1.left + 1; i < box1.right; i++) {
+            if (i > box2.left && i < box2.right) {
+                for (let j = box1.bottom + 1; j < box1.top; j++) {
+                    if (j > box2.bottom && j < box2.top)
                         return true;
                 }
             }
@@ -65,7 +65,6 @@ class Game {
             switch (e.keyCode) {
                 // Player 1
                 case 65:
-                    // Lots of similar code. Package in a function later?
                     this.player1.inputsList["l"] = true;
                     break;
                 case 68:
@@ -151,11 +150,10 @@ class Game {
         this.player2.action = null;
         this.lastAttacker = null;
 
-        // New start spacing from x = 150 is a temporary fix to strange 2P first strike bug
-        this.player1.spawn(140, 0);
+        this.player1.spawn(150, 0);
         this.player1.stand();
 
-        this.player2.spawn(this.canvas.width - this.player2.width - 140, 0);
+        this.player2.spawn(this.canvas.width - this.player2.width - 150, 0);
         this.player2.stand();
 
         this.winMessageEle.innerText = "";
@@ -169,25 +167,6 @@ class Game {
 
     turn() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-        // Order of processInputs linked to ghost whiff punish bug
-        //this.player.processInputs();
-        //this.player2.processInputs();
-
-        // BUG: ghost whiff punish bug
-        // Hmm, detects hit, saves victor
-        // then tries 2p action
-        // BUT processInputs clears existing hurtbox which p1 already hit
-        // then renders
-        // looks like ghost hit 
-
-        // BUG: first strike bug
-        // When player 1 and player 2 jab at round start at the same time, player 2 wins
-        // player 1 and player 2 should tie...
-
-        //if (this.lastAttacker)
-        //    console.log("lastAttacker:", this.lastAttacker);
-
 
         if (this.lastAttacker && this.lastAttacker.name == "Player 1") {
             this.player2.processInputs();
@@ -203,12 +182,7 @@ class Game {
 
         let winner;
 
-        // LOL, sorry for the big mess
-        // My attempt to fix the first strike bug
-        // This does collision detection after both players have had their inputs processed
-        // Old method did collision detection during player's attacks, which naturally
-        // do collision detection in the order the attacks were executed
-        // This solution does not seem to solve the bug though...
+        // LOL, this is quite a mess. Gotta clean this up some time
         for (let i = 0; i < this.entitiesArray.length; i++) {
             let currentEntity = this.entitiesArray[i];
             if (currentEntity.hitboxes.length > 0) {
@@ -234,7 +208,6 @@ class Game {
 
         if (this.winners.length > 0) {
             this.stop();
-            console.log("winners:", this.winners);
 
             let str = "Winner(s): ";
 

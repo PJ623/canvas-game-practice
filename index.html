@@ -5,6 +5,10 @@
     <meta charset="UTF-8">
     <title>Pokey</title>
     <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         .flex {
             display: flex;
         }
@@ -36,7 +40,35 @@
             margin: 1em;
         }
 
+        .no-margin {
+            margin: 0;
+        }
+
+        .margin-left {
+            margin-left: 1em;
+        }
+
+        .margin-right {
+            margin-right: 1em;
+        }
+
         #winners {
+            text-align: center;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+
+        .inline {
+            display: inline;
+        }
+
+        h2 {
+            margin: 0;
+        }
+
+        .text-center {
             text-align: center;
         }
     </style>
@@ -44,18 +76,30 @@
 
 <body>
     <div class="flex center column">
-        <h1>Pokey</h1>
-        <a href="https://github.com/PJ623/pokey" target="_blank">Written by PJ623</a>
+        <div>
+            <h1 class="text-center">Pokey</h1>
+            <a class="text-center" href="https://github.com/PJ623/pokey" target="_blank">Written by PJ623</a>
+        </div>
         <br>
-        <canvas id="game" height=240 width=640 tabindex="1"></canvas>
-        <br>
-        <div class="flex column">
+
+        <canvas id="game" class="margin" height=240 width=640 tabindex="1"></canvas>
+
+        <div class="flex center column">
             <span id="winners"></span>
         </div>
+
         <div class="flex center column">
+            <h1>Objective</h1>
+            <div>
+                Hit the other player!
+            </div>
+
+            <br>
+
+            <h1>Controls</h1>
             <div class="flex">
-                <div class="margin">
-                    <h2>Player 1</h2>
+                <div class="margin-left margin-right">
+                    <h2 class="text-center">Player 1</h2>
                     <ul>
                         <li>'a': move left</li>
                         <li>'d': move right</li>
@@ -63,8 +107,8 @@
                         <li>spacebar: attack</li>
                     </ul>
                 </div>
-                <div class="margin">
-                    <h2>Player 2</h2>
+                <div class="margin-left margin-right">
+                    <h2 class="text-center">Player 2</h2>
                     <ul>
                         <li>'4': move left</li>
                         <li>'6': move right</li>
